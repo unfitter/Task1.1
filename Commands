@@ -1,0 +1,59 @@
+Creating 2 users:
+adduser Raymond
+adduser John
+Now, in the home directory we have 2 more directories for John and Raymond
+
+SSH connection:
+cd home/Raymond
+mkdir .ssh
+ssh-keygen
+Transfering public key to the server(the second virtual machine with diffrent ip-address):
+Connecting to the server via ssh, when we are in server's terminal:
+cd home/Raymond
+mkdir .ssh
+cd .ssh
+vim authorized_keys
+Then just copy and paste public key into this file
+Changing modes:
+  On the server:
+  chmod 700 /home/raymond/.ssh/
+  chmod 600 /home/raymond/.ssh/*
+ssh raymond@192.168.126.133
+We dont have to put a password anymore from the Raymond but John has to put a password everytime he wants to connect to server. 
+Additinal, on our main machine we need to change owner of the directory Raymond:
+chown Raymond Raymond
+chmod 700 home/Raymond/.ssh/
+
+Giving root permission to Raymond:
+  usermod -aG sudo Raymond
+Restrict access to sudo for John:
+  1)sudo -su
+  2)Backup the /etc/sudoers config file:
+    cp -p /etc/sudoers /etc/sudoers.ORIG
+  3)Edit the /etc/sudoers config file:
+    visudo -f /etc/sudoers
+    ##Limit the John user to run any command (enabled for patching from oracle platnum support), except for sudo su to root
+    John ALL = ALL, !/bin/su
+    
+Creating a document from Raymond:
+vim document.txt
+    :wq
+chmod 644 home/Raymond/document.txt
+Creating a bash script from John:
+vim script.sh
+    :wq
+chmod 601 script.sh
+
+Changing shell for John:
+chsh -s /bin/bash John
+
+Create new user with sh shell:
+useradd -m -s /bin/sh Watson
+
+Working with groups:
+groupadd John
+usermod -a -G John Watson
+
+SCP:
+vim transfer.txt
+scp transfer.txt raymond@192.168.126.133:/home/raymond
